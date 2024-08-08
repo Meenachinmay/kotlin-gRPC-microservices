@@ -1,0 +1,15 @@
+server:
+  port: 8080
+
+grpc:
+  client:
+    account-service:
+      address: localhost
+      port: 9090
+      negotiationType: plaintext
+  server:
+    port: 9091
+
+spring:
+  application:
+    name: api-gateway
