@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service
 import org.springframework.dao.DataIntegrityViolationException
 import com.google.rpc.Status
 import io.grpc.stub.StreamObserver
+import org.slf4j.LoggerFactory
 
 @Service
 class AccountGrpcService(private val accountService: AccountService) : AccountServiceGrpc.AccountServiceImplBase() {
@@ -70,25 +71,49 @@ class AccountGrpcService(private val accountService: AccountService) : AccountSe
 
     }
 
-    override fun getAllAccounts(request: GetAllAccountsRequest, responseObserver: io.grpc.stub.StreamObserver<GetAllAccountsResponse>) {
+    private val logger = LoggerFactory.getLogger(AccountGrpcService::class.java)
+
+    override fun getAllAccounts(request: GetAllAccountsRequest, responseObserver: StreamObserver<GetAllAccountsResponse>) {
+        logger.info("Received request to get all accounts")
         try {
             val accounts = accountService.getAllAccounts()
-            val accountsDetailsList = accounts.map { account -> AccountDetails.newBuilder()
-                .setName(account.name)
-                .setPhoneNumber(account.phoneNumber)
-                .setPrefecture(account.prefecture)
-                .build()
+
+            if (accounts.isEmpty()) {
+                logger.info("No accounts found")
+                responseObserver.onNext(GetAllAccountsResponse.getDefaultInstance())
+                responseObserver.onCompleted()
+                return
+            }
+
+            val accountDetailsList = accounts.map { account ->
+                AccountDetails.newBuilder()
+                    .setName(account.name)
+                    .setPhoneNumber(account.phoneNumber)
+                    .setPrefecture(account.prefecture)
+                    .build()
             }
 
             val response = GetAllAccountsResponse.newBuilder()
-                .addAllAccounts(accountsDetailsList)
+                .addAllAccounts(accountDetailsList)
                 .build()
 
+            logger.info("Successfully retrieved ${accounts.size} accounts")
             responseObserver.onNext(response)
             responseObserver.onCompleted()
+        } catch (e: IllegalArgumentException) {
+            logger.warn("Invalid argument in getAllAccounts request", e)
+            responseObserver.onError(
+                io.grpc.Status.INVALID_ARGUMENT
+                    .withDescription("Invalid argument: ${e.message}")
+                    .asRuntimeException()
+            )
         } catch (e: Exception) {
-            responseObserver.onError(io.grpc.Status.INTERNAL.withDescription("Error: ${e.message}").asRuntimeException())
-            throw e
+            logger.error("Unexpected error occurred while fetching all accounts", e)
+            responseObserver.onError(
+                io.grpc.Status.INTERNAL
+                    .withDescription("An unexpected error occurred while fetching accounts")
+                    .asRuntimeException()
+            )
         }
     }
 }
