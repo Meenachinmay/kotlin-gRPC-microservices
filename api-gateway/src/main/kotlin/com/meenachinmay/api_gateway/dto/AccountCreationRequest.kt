@@ -1,12 +1,11 @@
 package com.meenachinmay.api_gateway.dto
 
-data class AccountDetails(
-    val accountId: String,
+data class AccountCreationRequest(
     val name: String,
     val phoneNumber: String,
     val prefecture: String
 )
 
-data class AccountsResponse(
-    val accounts: List<AccountDetails>
+data class AccountFetchRequest (
+    val phoneNumber: String
 )

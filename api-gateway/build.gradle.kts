@@ -34,6 +34,10 @@ dependencies {
 	implementation("net.devh:grpc-server-spring-boot-starter:2.14.0.RELEASE")
 	implementation("com.google.protobuf:protobuf-java:3.22.3")
 	implementation("javax.annotation:javax.annotation-api:1.3.2")
+	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0-RC")
+	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
+	implementation("org.springframework.boot:spring-boot-starter-webflux")
+	implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
 
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
