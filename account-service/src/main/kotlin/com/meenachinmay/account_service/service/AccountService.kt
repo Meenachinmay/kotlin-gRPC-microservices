@@ -18,4 +18,14 @@ class AccountService(private val accountRepository: AccountRepository) {
         val newAccount = Account(name = name, phoneNumber = phoneNumber, prefecture = prefecture)
         return accountRepository.save(newAccount)
     }
+
+    @Transactional(readOnly = true)
+    fun getAccountByPhoneNumber(phoneNumber: String): Account? {
+        return accountRepository.findByPhoneNumber(phoneNumber)
+    }
+
+    @Transactional(readOnly = true)
+    fun getAllAccounts(): List<Account> {
+       return accountRepository.findAll()
+    }
 }

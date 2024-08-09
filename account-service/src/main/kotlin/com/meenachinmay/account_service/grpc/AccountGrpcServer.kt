@@ -2,6 +2,7 @@ package com.meenachinmay.account_service.grpc
 
 import io.grpc.Server
 import io.grpc.ServerBuilder
+import net.devh.boot.grpc.server.service.GrpcService
 import org.springframework.stereotype.Component
 import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy

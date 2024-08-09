@@ -5,6 +5,8 @@ option java_package = "com.meenachinmay.account_service.grpc";
 
 service AccountService {
   rpc CreateAccount (CreateAccountRequest) returns (CreateAccountResponse) {}
+  rpc GetAccount (GetAccountRequest) returns (GetAccountResponse) {}
+  rpc GetAllAccounts (GetAllAccountsRequest) returns (GetAllAccountsResponse) {}
 }
 
 message CreateAccountRequest {
@@ -15,4 +17,27 @@ message CreateAccountRequest {
 
 message CreateAccountResponse {
   string message = 1;
+}
+
+message GetAccountRequest {
+  string phone_number = 1;
+}
+
+message GetAccountResponse {
+  AccountDetails account = 1;
+}
+
+message GetAllAccountsRequest {
+  // You can add pagination or filtering parameters here if needed
+}
+
+message GetAllAccountsResponse {
+  repeated AccountDetails accounts = 1;
+}
+
+message AccountDetails {
+  string account_id = 1;
+  string name = 2;
+  string phone_number = 3;
+  string prefecture = 4;
 }

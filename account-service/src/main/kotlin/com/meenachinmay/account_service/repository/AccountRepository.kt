@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository
 @Repository
 interface AccountRepository : JpaRepository<Account, Long?> {
     fun findByPhoneNumber(phoneNumber: String): Account?
+    override fun findAll(): List<Account>
 }
