@@ -4,12 +4,15 @@ import com.meenachinmay.api_gateway.dto.LoginRequest
 import com.meenachinmay.api_gateway.dto.RegisterRequest
 import com.meenachinmay.api_gateway.model.User
 import com.meenachinmay.api_gateway.service.user.UserService
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
-import org.springframework.security.core.context.SecurityContextHolder
-import jakarta.servlet.http.HttpSession
+import jakarta.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletResponse
 import org.slf4j.LoggerFactory
 import org.springframework.http.ResponseEntity
+import org.springframework.security.authentication.AuthenticationManager
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.crypto.password.PasswordEncoder
+import org.springframework.security.web.context.SecurityContextRepository
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -17,50 +20,56 @@ import org.springframework.web.bind.annotation.*
 class AuthController(
     private val userService: UserService,
     private val passwordEncoder: PasswordEncoder,
+    private val authenticationManager: AuthenticationManager,
+    private val securityContextRepository: SecurityContextRepository
 ) {
     private val logger = LoggerFactory.getLogger(AuthController::class.java)
 
     @PostMapping("/register")
     fun register(@RequestBody request: RegisterRequest): ResponseEntity<*> {
-        val existingUser = userService.findByUsername(request.username)
+        val existingUser = userService.findByEmail(request.email)
         if (existingUser != null) {
-            return ResponseEntity.badRequest().body("Username already exists")
+            return ResponseEntity.badRequest().body("Email already exists")
         }
 
         val newUser = User(
-            username = request.username,
-            password = passwordEncoder.encode(request.password),
-            email = request.email
+            name = request.name,
+            email = request.email,
+            password = passwordEncoder.encode(request.password)
         )
+
         userService.save(newUser)
         return ResponseEntity.ok("User registered successfully")
     }
 
     @PostMapping("/login")
-    fun login(@RequestBody request: LoginRequest, session: HttpSession): ResponseEntity<*> {
-        val user = userService.findByUsername(request.username)
-            ?: return ResponseEntity.badRequest().body("Invalid username or password")
+    fun login(@RequestBody request: LoginRequest, httpServletRequest: HttpServletRequest, httpServletResponse: HttpServletResponse): ResponseEntity<*> {
+        try {
+            val authentication = authenticationManager.authenticate(
+                UsernamePasswordAuthenticationToken(request.email, request.password)
+            )
+            val securityContext = SecurityContextHolder.getContext()
+            securityContext.authentication = authentication
 
-        if (!passwordEncoder.matches(request.password, user.password)) {
-            return ResponseEntity.badRequest().body("Invalid username or password")
+            securityContextRepository.saveContext(securityContext, httpServletRequest, httpServletResponse)
+
+            val user = authentication.principal as User
+            httpServletRequest.getSession(true).setAttribute("USER_ID", user.id)
+
+            logger.info("Session ID: ${httpServletRequest.session.id}")
+
+            return ResponseEntity.ok("Login successful")
+        } catch (e: Exception) {
+            logger.error("Login failed for user: ${request.email}", e)
+            return ResponseEntity.badRequest().body("Invalid email or password")
         }
-
-        session.setAttribute("USER_ID", user.id)
-
-        // Set security context
-        val auth = UsernamePasswordAuthenticationToken(user, null, emptyList())
-        SecurityContextHolder.getContext().authentication = auth
-
-        logger.info("User logged in: ${user.username}")
-        logger.info("Session ID: ${session.id}")
-
-        return ResponseEntity.ok("Login successful")
     }
 
     @PostMapping("/logout")
-    fun logout(session: HttpSession): ResponseEntity<*> {
-        session.invalidate()
+    fun logout(httpServletRequest: HttpServletRequest, httpServletResponse: HttpServletResponse): ResponseEntity<*> {
+        httpServletRequest.session.invalidate()
         SecurityContextHolder.clearContext()
+        securityContextRepository.saveContext(SecurityContextHolder.createEmptyContext(), httpServletRequest, httpServletResponse)
         logger.info("User logged out")
         return ResponseEntity.ok("Logout successful")
     }
