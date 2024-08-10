@@ -5,6 +5,6 @@ import org.springframework.stereotype.Service
 
 @Service
 interface UserService {
-    fun findByUsername(username: String): User?
+    fun findByEmail(email: String): User?
     fun save(user: User): User
 }

@@ -12,8 +12,8 @@ import org.springframework.transaction.annotation.Transactional
 class UserServiceImpl(private val userRepository: UserRepository) : UserService, UserDetailsService {
 
     @Transactional(readOnly = true)
-    override fun findByUsername(username: String): User? {
-        return userRepository.findByUsername(username)
+    override fun findByEmail(email: String): User? {
+        return userRepository.findByEmail(email)
     }
 
     @Transactional
@@ -22,8 +22,8 @@ class UserServiceImpl(private val userRepository: UserRepository) : UserService,
     }
 
     @Transactional(readOnly = true)
-    override fun loadUserByUsername(username: String): UserDetails {
-        return findByUsername(username)
-            ?: throw UsernameNotFoundException("User not found: $username")
+    override fun loadUserByUsername(email: String): UserDetails {
+        return findByEmail(email)
+            ?: throw UsernameNotFoundException("User not found with email: $email")
     }
 }

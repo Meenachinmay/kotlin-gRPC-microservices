@@ -12,12 +12,12 @@ class User(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null,
 
+    var name: String = "",
+
     @Column(unique = true)
-    private var username: String = "",
+    private var email: String = "",
 
     private var password: String = "",
-
-    var email: String = "",
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "user_roles", joinColumns = [JoinColumn(name = "user_id")])
@@ -35,7 +35,8 @@ class User(
 
     override fun getPassword(): String = password
 
-    override fun getUsername(): String = username
+    // Returns email as the username
+    override fun getUsername(): String = email
 
     override fun isAccountNonExpired(): Boolean = true
 
@@ -44,13 +45,4 @@ class User(
     override fun isCredentialsNonExpired(): Boolean = true
 
     override fun isEnabled(): Boolean = true
-
-    // Add setters for username and password
-    fun setUsername(username: String) {
-        this.username = username
-    }
-
-    fun setPassword(password: String) {
-        this.password = password
-    }
 }
