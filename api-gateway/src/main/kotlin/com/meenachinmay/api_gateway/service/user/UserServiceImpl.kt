@@ -1,18 +1,15 @@
 package com.meenachinmay.api_gateway.service.user
 
 import com.meenachinmay.api_gateway.model.User
-import org.springframework.data.jpa.repository.JpaRepository
-import org.springframework.stereotype.Repository
+import com.meenachinmay.api_gateway.repository.UserRepository
+import org.springframework.security.core.userdetails.UserDetails
+import org.springframework.security.core.userdetails.UserDetailsService
+import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
-@Repository
-interface UserRepository : JpaRepository<User, Long> {
-    fun findByUsername(username: String): User?
-}
-
 @Service
-class UserServiceImpl(private val userRepository: UserRepository) : UserService {
+class UserServiceImpl(private val userRepository: UserRepository) : UserService, UserDetailsService {
 
     @Transactional(readOnly = true)
     override fun findByUsername(username: String): User? {
@@ -22,5 +19,11 @@ class UserServiceImpl(private val userRepository: UserRepository) : UserService 
     @Transactional
     override fun save(user: User): User {
         return userRepository.save(user)
+    }
+
+    @Transactional(readOnly = true)
+    override fun loadUserByUsername(username: String): UserDetails {
+        return findByUsername(username)
+            ?: throw UsernameNotFoundException("User not found: $username")
     }
 }
