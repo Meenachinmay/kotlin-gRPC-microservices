@@ -3,6 +3,9 @@ package com.meenachinmay.api_gateway.controller.account
 import com.meenachinmay.api_gateway.dto.AccountCreationRequest
 import com.meenachinmay.api_gateway.dto.AccountFetchRequest
 import com.meenachinmay.api_gateway.service.account.AccountService
+import org.springframework.security.core.context.SecurityContextHolder
+
+import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -13,6 +16,14 @@ import org.springframework.web.server.ResponseStatusException
 class AccountController(private val accountService: AccountService) {
 
     data class ErrorResponse(val message: String)
+    private val logger = LoggerFactory.getLogger(AccountController::class.java)
+
+    @GetMapping("/test")
+    fun testAuth(): String {
+        val auth = SecurityContextHolder.getContext().authentication
+        logger.info("Authentication: ${auth?.name}")
+        return "Authenticated as: ${auth?.name}"
+    }
 
     @PostMapping
     fun createAccount(@RequestBody request: AccountCreationRequest): ResponseEntity<String> {

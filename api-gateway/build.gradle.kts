@@ -24,6 +24,8 @@ repositories {
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
 	implementation("org.springframework.boot:spring-boot-starter-web")
+	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+	implementation("org.postgresql:postgresql:42.7.2") // Use the latest version available
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("org.jetbrains.kotlin:kotlin-stdlib")
@@ -36,8 +38,14 @@ dependencies {
 	implementation("javax.annotation:javax.annotation-api:1.3.2")
 	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0-RC")
 	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
-	implementation("org.springframework.boot:spring-boot-starter-webflux")
 	implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
+	implementation("org.springframework.boot:spring-boot-starter-security")
+	implementation("org.springframework.boot:spring-boot-starter-data-redis")
+	implementation("org.springframework.session:spring-session-data-redis")
+	implementation("org.springframework.boot:spring-boot-starter-web")
+	implementation("io.jsonwebtoken:jjwt-api:0.11.5")
+	implementation("io.jsonwebtoken:jjwt-impl:0.11.5")
+	implementation("io.jsonwebtoken:jjwt-jackson:0.11.5")
 
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
