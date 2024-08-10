@@ -15,7 +15,7 @@ class User(
     var name: String = "",
 
     @Column(unique = true)
-    private var email: String = "",
+    var email: String = "",
 
     private var password: String = "",
 

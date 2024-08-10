@@ -1,8 +1,11 @@
 package com.meenachinmay.api_gateway.controller.auth
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.meenachinmay.api_gateway.dto.LoginRequest
 import com.meenachinmay.api_gateway.dto.RegisterRequest
 import com.meenachinmay.api_gateway.model.User
+import com.meenachinmay.api_gateway.service.kafka.ProducerService
 import com.meenachinmay.api_gateway.service.user.UserService
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -21,8 +24,10 @@ class AuthController(
     private val userService: UserService,
     private val passwordEncoder: PasswordEncoder,
     private val authenticationManager: AuthenticationManager,
-    private val securityContextRepository: SecurityContextRepository
-) {
+    private val securityContextRepository: SecurityContextRepository,
+    private val kafkaProducerService: ProducerService,
+    private val objectMapper: ObjectMapper
+    ) {
     private val logger = LoggerFactory.getLogger(AuthController::class.java)
 
     @PostMapping("/register")
@@ -38,7 +43,15 @@ class AuthController(
             password = passwordEncoder.encode(request.password)
         )
 
-        userService.save(newUser)
+        val savedUser = userService.save(newUser)
+
+        // send welcome message to user
+        val welcomeEmailMessage = objectMapper.writeValueAsString(mapOf(
+            "name" to savedUser.name,
+            "email" to savedUser.email
+        ))
+        kafkaProducerService.sendWelcomeEmailMessage(welcomeEmailMessage)
+
         return ResponseEntity.ok("User registered successfully")
     }
 

@@ -1,0 +1,35 @@
+server:
+  port: 8081
+  tomcat:
+    max-threads: 400
+    max-connections: 10000
+    accept-count: 1000
+    connection-timeout: 5000
+  server:
+    servlet:
+      session:
+        timeout: 30m
+
+spring:
+  kafka:
+    consumer:
+      bootstrap-servers: localhost:29092
+      group-id: email-service-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+  datasource:
+    url: jdbc:postgresql://localhost:5432/accountdb
+    username: postgres
+    password: postgres
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+kafka:
+  topic:
+    welcome-email: send-welcome-email
+    reset-password-email: reset-password-email
