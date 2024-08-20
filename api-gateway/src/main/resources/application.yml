@@ -9,6 +9,8 @@ server:
     servlet:
       session:
         timeout: 30m
+  error:
+    include-message: always
 
 grpc:
   client:
@@ -31,7 +33,7 @@ spring:
       flush-mode: on_save
       namespace: spring:session
   datasource:
-    url: jdbc:postgresql://localhost:5432/accountdb
+    url: jdbc:postgresql://localhost:5432/userdb
     username: postgres
     password: postgres
   jpa:
@@ -45,6 +47,13 @@ spring:
       bootstrap-servers: localhost:29092
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
+
+pusher:
+  app-key: 6ba8c285cf1ace0586de
+  app-secret: 1095c25bd55175aa9f05
+  app-id: 1848195
+  cluster: ap3
+
 kafka:
   topic:
     welcome-email: send-welcome-email

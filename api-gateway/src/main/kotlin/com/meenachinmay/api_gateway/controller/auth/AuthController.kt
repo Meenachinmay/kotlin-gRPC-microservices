@@ -1,7 +1,6 @@
 package com.meenachinmay.api_gateway.controller.auth
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.meenachinmay.api_gateway.dto.LoginRequest
 import com.meenachinmay.api_gateway.dto.RegisterRequest
 import com.meenachinmay.api_gateway.model.User

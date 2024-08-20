@@ -7,4 +7,5 @@ import org.springframework.stereotype.Service
 interface UserService {
     fun findByEmail(email: String): User?
     fun save(user: User): User
+//    fun update(user: User): User
 }
