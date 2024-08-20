@@ -48,11 +48,7 @@ spring:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
 
-pusher:
-  app-key: 6ba8c285cf1ace0586de
-  app-secret: 1095c25bd55175aa9f05
-  app-id: 1848195
-  cluster: ap3
+
 
 kafka:
   topic:
